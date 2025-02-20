@@ -52,7 +52,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./build"  # 确保 `npm run build` 生成的文件位于 `build/` 目录
+          path: "./dist"
 
       # 7️⃣ 部署到 公共仓库 的 GitHub Pages
       - name: Deploy to GitHub Pages
