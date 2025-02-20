@@ -1,0 +1,60 @@
+# GitHub Actions 工作流：克隆私有仓库、构建并部署到 GitHub Pages
+name: Deploy WebCryptor to GitHub Pages
+
+on:
+  workflow_dispatch:  # 允许手动触发部署
+
+# 设置 GitHub Pages 部署权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 允许仅保留最新一次部署，防止并发冲突
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1️⃣ 拉取 **私有仓库** 代码
+      - name: Checkout private repository
+        uses: actions/checkout@v4
+        with:
+          repository: ACG-Q/WebCryptor
+          token: ${{ secrets.GH_TOKEN }}
+
+      # 2️⃣ 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # 3️⃣ 安装依赖
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ 构建 WebCryptor
+      - name: Build project
+        run: npm run build
+
+      # 5️⃣ 配置 GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 6️⃣ 上传构建后的网页文件
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./build"  # 确保 `npm run build` 生成的文件位于 `build/` 目录
+
+      # 7️⃣ 部署到 公共仓库 的 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

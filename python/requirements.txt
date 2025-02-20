@@ -1,0 +1,5 @@
+# GUI Framework
+PyQt5>=5.15.0
+
+# Cryptography
+cryptography>=3.4.0
