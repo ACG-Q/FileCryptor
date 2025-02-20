@@ -58,9 +58,11 @@ jobs:
     - name: Build Python GUI
       run: |
         cd python
-        pyinstaller --onefile --noconsole \
-          --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} \
-          main.py --name ${{ matrix.python_executable%.* }}
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          pyinstaller --onefile --noconsole --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} main.py --name "${{ matrix.python_executable }}"
+        else
+          pyinstaller --onefile --noconsole --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} main.py --name "${{ matrix.python_executable }}"
+        fi
 
     - name: Set up Go
       uses: actions/setup-go@v4
