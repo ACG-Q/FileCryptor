@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  PYTHON_VERSION: 3.8  # 修复拼写错误
+  PYTHON_VERSION: 3.8
   GO_VERSION: 1.19
   ICON_DIR: .github/workflows/assets/
 
@@ -58,28 +58,28 @@ jobs:
     - name: Build Python GUI
       run: |
         cd python
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          pyinstaller --onefile --noconsole --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} main.py --name "${{ matrix.python_executable }}"
-        else
-          pyinstaller --onefile --noconsole --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} main.py --name "${{ matrix.python_executable }}"
-        fi
+        pyinstaller --onefile --noconsole --icon=${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.py_icon }} main.py --name "${{ matrix.python_executable }}"
 
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
-        cache: true  # 启用 Go 模块缓存
+        cache: true
 
     - name: Build Go CLI
+      if: matrix.os == 'windows-latest'
       run: |
         cd golang
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          go install github.com/akavel/rsrc@latest
-          rsrc -ico ${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.go_icon }} -o resource.syso
-        fi
+        go install github.com/akavel/rsrc@latest
+        rsrc -ico ${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.go_icon }} -o resource.syso
         go build -o ${{ matrix.go_executable }}
-        # 清理中间文件（仅 Windows）
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then rm -f resource.syso; fi
+        rm -f resource.syso
+
+    - name: Build Go CLI
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd golang
+        go build -o ${{ matrix.go_executable }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
@@ -94,8 +94,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 确保有创建发布的权限
-      
+      contents: write
+
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
