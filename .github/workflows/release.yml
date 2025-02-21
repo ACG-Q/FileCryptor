@@ -73,7 +73,7 @@ jobs:
         go install github.com/akavel/rsrc@latest
         rsrc -ico ${{ github.workspace }}/${{ env.ICON_DIR }}${{ matrix.go_icon }} -o resource.syso
         go build -o ${{ matrix.go_executable }}
-        rm -f resource.syso
+        del resource.syso
 
     - name: Build Go CLI
       if: matrix.os != 'windows-latest'
