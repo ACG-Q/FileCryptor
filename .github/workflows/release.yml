@@ -24,7 +24,7 @@ jobs:
             python_executable: python-filecrypt-gui-win-x64.exe
             go_executable: go-filecrypt-cli-win-x64.exe
           - os: macos-latest
-            py_icon: 杰瑞.png
+            py_icon: 杰瑞.icns
             go_icon: ""
             python_executable: python-filecrypt-gui-macos-x64
             go_executable: go-filecrypt-cli-macos-x64
